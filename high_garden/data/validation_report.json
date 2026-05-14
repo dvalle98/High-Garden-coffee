@@ -1,0 +1,28 @@
+{
+  "shape": [
+    55,
+    33
+  ],
+  "n_countries": 55,
+  "n_years": 30,
+  "period": "1990/91 -> 2019/20",
+  "coffee_types": {
+    "Arabica": 22,
+    "Robusta": 15,
+    "Robusta/Arabica": 10,
+    "Arabica/Robusta": 8
+  },
+  "nulls": 0,
+  "duplicates_country_type": 0,
+  "total_consistency_max_pct_diff": 0.0,
+  "countries_with_zeros": [
+    "Timor-Leste",
+    "Zambia",
+    "Equatorial Guinea",
+    "Guyana",
+    "Lao People's Democratic Republic",
+    "Nepal",
+    "Yemen"
+  ],
+  "negative_values": 0
+}
