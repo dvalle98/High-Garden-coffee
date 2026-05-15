@@ -70,18 +70,11 @@ Abre los tres notebooks en orden y ejecuta cada uno con **"Run All"** :
 1. `01_eda_storytelling.ipynb` — Análisis exploratorio con storytelling
 2. `02_forecasting.ipynb` — Forecasting con detección de quiebres
 3. `03_segmentation_1.ipynb` — Segmentación estratégica y scoring IPS
-4. `04_chatbot.ipynb` — Chatbot analítico + RAG
 
 > Cada notebook es **autosuficiente** : si se ejecuta sin que existan los archivos intermedios,
 > los regenera automáticamente. No es necesario ejecutar nada manual fuera de los notebooks.
 
-Para usar el chatbot fuera de Jupyter:
-
-```bash
-export OPENAI_API_KEY="sk-..."          # o define la variable en .env
-python high_garden/rag_indexer.py        # genera high_garden/vector_store.faiss
-python high_garden/chatbot.py            # inicia el asistente en modo CLI
-```
+Para usar el chatbot (CLI) y el pipeline RAG, revisa la sección [Módulo 4 — Chatbot analítico + RAG](#módulo-4--chatbot-analítico--rag).
 
 ---
 
@@ -97,8 +90,8 @@ python high_garden/chatbot.py            # inicia el asistente en modo CLI
 │   ├── 01_eda_storytelling.ipynb  ← MÓDULO 1: Análisis exploratorio
 │   ├── 02_forecasting.ipynb       ← MÓDULO 2: Forecasting
 │   ├── 03_segmentation_1.ipynb    ← MÓDULO 3: Segmentación + scoring IPS
-│   ├── 04_chatbot.ipynb           ← MÓDULO 4: Chatbot + RAG documentado
 │   ├── chatbot.py                 ← CLI del agente (LangChain + tools)
+│   ├── chat_runtime.py            ← Runtime compartido (agent, tools, streaming)
 │   ├── rag_indexer.py             ← Pipeline para generar vector_store.faiss
 │   ├── rag_store.py               ← Utilidades FAISS + wrapper LocalKnowledgeBase
 │   ├── data_prep.py               ← Carga, validación, enriquecimiento
@@ -118,8 +111,8 @@ python high_garden/chatbot.py            # inicia el asistente en modo CLI
 │   │   ├── country_segments.parquet
 │   │   ├── cluster_centroids.parquet
 │   │   ├── clustering_meta.json
-│   │   ├── validation_report.json
-│   │   └── vector_store.faiss     ← Base de conocimiento FAISS (RAG)
+│   │   └── validation_report.json
+│   ├── vector_store.faiss         ← Base de conocimiento FAISS (RAG)
 │   └── figures/                   ← 17 PNGs generados por los notebooks
 ```
 
@@ -132,21 +125,21 @@ python high_garden/chatbot.py            # inicia el asistente en modo CLI
 | **1** | `01_eda_storytelling.ipynb` | ¿Qué nos dicen los datos?                            | EDA + storytelling editorial          |
 | **2** | `02_forecasting.ipynb`      | ¿Dónde y cuánto crecerá la demanda doméstica?        | PELT + 4 modelos en competencia       |
 | **3** | `03_segmentation_1.ipynb`   | ¿Qué países priorizar comercialmente?                | K-Means + IPS compuesto               |
-| **4** | `04_chatbot.ipynb`          | ¿Cómo democratizar el análisis vía lenguaje natural? | LangChain agent + tools + RAG (FAISS) |
+| **4** | `chatbot.py` (CLI)          | ¿Cómo democratizar el análisis vía lenguaje natural? | LangChain agent + tools + RAG (FAISS) |
 
 ---
 
 ## Módulo 4 — Chatbot analítico + RAG
 
 - **Objetivo:** entregar el análisis a decisores no técnicos mediante un asistente conversacional que aprovecha todo lo calculado en los módulos 1-3 y el contexto narrativo del README/RESUMEN.
-- **Arquitectura:** LangChain `create_agent` + OpenAI GPT-4o-mini + tools tabulares (perfiles, rankings, clústers, forecasts, comparaciones) + nueva tool `search_knowledge_base` respaldada por un vector store FAISS (`vector_store.faiss`).
-- **Pipeline RAG:** `rag_indexer.py` extrae texto de README, RESUMEN_EJECUTIVO y los 4 notebooks, los chunkifica (~1100 caracteres con 150 de overlap), genera embeddings `text-embedding-3-small` y persiste FAISS mediante `rag_store.LocalKnowledgeBase`.
+- **Arquitectura:** LangChain `create_agent` + OpenAI GPT-4o-mini + tools tabulares (perfiles, rankings, clústers, forecasts, comparaciones) + tool `search_knowledge_base` respaldada por un vector store FAISS (`vector_store.faiss`).
+- **Pipeline RAG:** `rag_indexer.py` extrae texto de README, RESUMEN_EJECUTIVO y los notebooks analíticos (M1-M3), los chunkifica (~1100 caracteres con 150 de overlap), genera embeddings `text-embedding-3-small` y persiste FAISS mediante `rag_store.LocalKnowledgeBase`.
 - **System prompt minimalista:** solo define identidad + reglas de enrutamiento; los hallazgos viven en el vector store, evitando drift cuando los datos cambian.
 - **Modo de uso:**
   1. Configura `OPENAI_API_KEY` (o edita `.env`).
-  2. Ejecuta `python high_garden/rag_indexer.py` para regenerar `vector_store.faiss` cuando cambie el corpus.
-  3. Lanza `python high_garden/chatbot.py` para una sesión CLI con memoria; o consume `ChatSession` desde cualquier script.
-- **Demostración:** el notebook `04_chatbot.ipynb` documenta el pipeline RAG, muestra llamadas a las tools y ejemplifica las respuestas del agente con citación `(archivo · chunk)`.
+  2. Ejecuta `python high_garden/rag_indexer.py --chunk-size 1100 --chunk-overlap 150` cuando cambie el corpus narrativo.
+  3. Lanza `python high_garden/chatbot.py` para conversar vía CLI (usa `CHATBOT_STREAMING=0` si prefieres recibir la respuesta completa sin streaming).
+- **Roadmap recomendado:** desplegar el mismo runtime con FastAPI + SSE para servir una interfaz web ligera; la arquitectura está planteada en la sección de recomendaciones, pero no se implementó por falta de tiempo.
 
 ---
 
