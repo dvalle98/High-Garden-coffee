@@ -1,0 +1,30 @@
+name: high-garden-coffee
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python>=3.10
+
+  # Análisis de datos
+  - pandas>=2.0
+  - numpy>=1.24
+  - pyarrow>=14.0
+
+  # Visualización
+  - matplotlib>=3.7
+
+  # Machine Learning
+  - scikit-learn>=1.3
+  - statsmodels>=0.14
+
+  # Jupyter
+  - jupyter>=1.0
+  - notebook>=7.0
+  - ipykernel>=6.0
+  - nbformat>=5.7
+
+  # Dependencias instaladas vía pip (no disponibles cleanly en conda)
+  - pip
+  - pip:
+      - ruptures>=1.1.7
