@@ -69,58 +69,84 @@ Abre los tres notebooks en orden y ejecuta cada uno con **"Run All"** :
 
 1. `01_eda_storytelling.ipynb` — Análisis exploratorio con storytelling
 2. `02_forecasting.ipynb` — Forecasting con detección de quiebres
-3. `03_segmentation.ipynb` — Segmentación estratégica y scoring
+3. `03_segmentation_1.ipynb` — Segmentación estratégica y scoring IPS
+4. `04_chatbot.ipynb` — Chatbot analítico + RAG
 
 > Cada notebook es **autosuficiente** : si se ejecuta sin que existan los archivos intermedios,
 > los regenera automáticamente. No es necesario ejecutar nada manual fuera de los notebooks.
+
+Para usar el chatbot fuera de Jupyter:
+
+```bash
+export OPENAI_API_KEY="sk-..."          # o define la variable en .env
+python high_garden/rag_indexer.py        # genera high_garden/vector_store.faiss
+python high_garden/chatbot.py            # inicia el asistente en modo CLI
+```
 
 ---
 
 ## Estructura del proyecto
 
 ```
-high_garden/
-├── README.md                       ← este archivo
-├── RESUMEN_EJECUTIVO.md             ← síntesis comercial (1-2 páginas)
-├── requirements.txt                 ← dependencias pip
-├── environment.yml                  ← dependencias conda (alternativa)
-│
-├── 01_eda_storytelling.ipynb        ← MÓDULO 1: Análisis exploratorio
-├── 02_forecasting.ipynb             ← MÓDULO 2: Forecasting
-├── 03_segmentation.ipynb            ← MÓDULO 3: Segmentación + scoring
-│
-├── data_prep.py                     ← Carga, validación, enriquecimiento
-├── eda_viz.py                       ← 7 visualizaciones del M1
-├── style.py                         ← Sistema de diseño editorial
-├── breakpoints.py                   ← Detección de quiebres (PELT)
-├── forecasting.py                   ← 4 modelos + backtest + forecast
-├── forecast_viz.py                  ← 5 visualizaciones del M2
-├── segmentation.py                  ← Feature engineering + K-Means + IPS
-├── segment_viz.py                   ← 5 visualizaciones del M3
-│
-├── data/                            ← Generado por los notebooks
-│   ├── coffee_long.parquet          (formato long, 1650 filas)
-│   ├── coffee_wide.parquet          (tabla enriquecida, 55 países)
-│   ├── breakpoints.parquet          (quiebres estructurales)
-│   ├── backtest_summary.parquet     (métricas de modelos)
-│   ├── forecasts.parquet            (proyecciones 2020-2024)
-│   ├── country_segments.parquet     (55 países segmentados con IPS)
-│   ├── cluster_centroids.parquet    (perfiles de los 5 clústers)
-│   ├── clustering_meta.json         (metadata de la segmentación)
-│   └── validation_report.json       (auditoría de calidad)
-│
-└── figures/                         ← Generadas por los notebooks (17 PNGs)
+├── README.md                      ← este archivo
+├── RESUMEN_EJECUTIVO.md           ← síntesis comercial (1-2 páginas)
+├── requirements.txt               ← dependencias pip
+├── environment.yml                ← dependencias conda (alternativa)
+├── .env.example                   ← plantilla para credenciales
+├── high_garden/
+│   ├── 01_eda_storytelling.ipynb  ← MÓDULO 1: Análisis exploratorio
+│   ├── 02_forecasting.ipynb       ← MÓDULO 2: Forecasting
+│   ├── 03_segmentation_1.ipynb    ← MÓDULO 3: Segmentación + scoring IPS
+│   ├── 04_chatbot.ipynb           ← MÓDULO 4: Chatbot + RAG documentado
+│   ├── chatbot.py                 ← CLI del agente (LangChain + tools)
+│   ├── rag_indexer.py             ← Pipeline para generar vector_store.faiss
+│   ├── rag_store.py               ← Utilidades FAISS + wrapper LocalKnowledgeBase
+│   ├── data_prep.py               ← Carga, validación, enriquecimiento
+│   ├── eda_viz.py                 ← Visualizaciones del módulo 1
+│   ├── style.py                   ← Sistema de diseño editorial
+│   ├── breakpoints.py             ← Detección de quiebres (PELT)
+│   ├── forecasting.py             ← 4 modelos + backtest + forecast
+│   ├── forecast_viz.py            ← Visualizaciones del módulo 2
+│   ├── segmentation.py            ← Feature engineering + K-Means + IPS
+│   ├── segment_viz.py             ← Visualizaciones del módulo 3
+│   ├── data/
+│   │   ├── coffee_long.parquet
+│   │   ├── coffee_wide.parquet
+│   │   ├── breakpoints.parquet
+│   │   ├── backtest_summary.parquet
+│   │   ├── forecasts.parquet
+│   │   ├── country_segments.parquet
+│   │   ├── cluster_centroids.parquet
+│   │   ├── clustering_meta.json
+│   │   ├── validation_report.json
+│   │   └── vector_store.faiss     ← Base de conocimiento FAISS (RAG)
+│   └── figures/                   ← 17 PNGs generados por los notebooks
 ```
 
 ---
 
 ## Mapa de los módulos
 
-| #     | Notebook                    | Pregunta de negocio                           | Técnica clave                   |
-| ----- | --------------------------- | --------------------------------------------- | ------------------------------- |
-| **1** | `01_eda_storytelling.ipynb` | ¿Qué nos dicen los datos?                     | EDA + storytelling editorial    |
-| **2** | `02_forecasting.ipynb`      | ¿Dónde y cuánto crecerá la demanda doméstica? | PELT + 4 modelos en competencia |
-| **3** | `03_segmentation.ipynb`     | ¿Qué países priorizar comercialmente?         | K-Means + IPS compuesto         |
+| #     | Notebook                    | Pregunta de negocio                                  | Técnica clave                         |
+| ----- | --------------------------- | ---------------------------------------------------- | ------------------------------------- |
+| **1** | `01_eda_storytelling.ipynb` | ¿Qué nos dicen los datos?                            | EDA + storytelling editorial          |
+| **2** | `02_forecasting.ipynb`      | ¿Dónde y cuánto crecerá la demanda doméstica?        | PELT + 4 modelos en competencia       |
+| **3** | `03_segmentation_1.ipynb`   | ¿Qué países priorizar comercialmente?                | K-Means + IPS compuesto               |
+| **4** | `04_chatbot.ipynb`          | ¿Cómo democratizar el análisis vía lenguaje natural? | LangChain agent + tools + RAG (FAISS) |
+
+---
+
+## Módulo 4 — Chatbot analítico + RAG
+
+- **Objetivo:** entregar el análisis a decisores no técnicos mediante un asistente conversacional que aprovecha todo lo calculado en los módulos 1-3 y el contexto narrativo del README/RESUMEN.
+- **Arquitectura:** LangChain `create_agent` + OpenAI GPT-4o-mini + tools tabulares (perfiles, rankings, clústers, forecasts, comparaciones) + nueva tool `search_knowledge_base` respaldada por un vector store FAISS (`vector_store.faiss`).
+- **Pipeline RAG:** `rag_indexer.py` extrae texto de README, RESUMEN_EJECUTIVO y los 4 notebooks, los chunkifica (~1100 caracteres con 150 de overlap), genera embeddings `text-embedding-3-small` y persiste FAISS mediante `rag_store.LocalKnowledgeBase`.
+- **System prompt minimalista:** solo define identidad + reglas de enrutamiento; los hallazgos viven en el vector store, evitando drift cuando los datos cambian.
+- **Modo de uso:**
+  1. Configura `OPENAI_API_KEY` (o edita `.env`).
+  2. Ejecuta `python high_garden/rag_indexer.py` para regenerar `vector_store.faiss` cuando cambie el corpus.
+  3. Lanza `python high_garden/chatbot.py` para una sesión CLI con memoria; o consume `ChatSession` desde cualquier script.
+- **Demostración:** el notebook `04_chatbot.ipynb` documenta el pipeline RAG, muestra llamadas a las tools y ejemplifica las respuestas del agente con citación `(archivo · chunk)`.
 
 ---
 

@@ -1,0 +1,32 @@
+{
+  "best_k": 4,
+  "silhouette_scores": {
+    "4": 0.4511832282884365,
+    "5": 0.4419965206082552,
+    "6": 0.3179251981905217,
+    "7": 0.32538487077756784
+  },
+  "best_silhouette": 0.4511832282884365,
+  "explained_variance": [
+    0.5485565147123849,
+    0.2689784044475035
+  ],
+  "cluster_names": {
+    "0": "Aceleraci\u00f3n Sostenida",
+    "1": "Estables Predecibles",
+    "2": "Estancamiento",
+    "3": "Crecimiento Maduro"
+  },
+  "cluster_descriptions": {
+    "0": "Crecen y la velocidad sube. M\u00e1xima se\u00f1al de tensi\u00f3n sobre oferta.",
+    "1": "Consumo pr\u00e1cticamente constante. Comportamiento muy predecible.",
+    "2": "Consumo dom\u00e9stico declinante leve. Mercados que pierden tracci\u00f3n.",
+    "3": "Crecen s\u00f3lidamente pero el ritmo se est\u00e1 suavizando. Mercados consolidando."
+  },
+  "ips_weights": {
+    "size_log": 0.3,
+    "growth_forecast": 0.3,
+    "acceleration": 0.2,
+    "predictability": 0.2
+  }
+}
